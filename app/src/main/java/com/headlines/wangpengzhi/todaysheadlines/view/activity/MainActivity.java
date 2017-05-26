@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity{
 
         SMSSDK.initSDK(this, "1de49df839a40", "8f08e8dfc865cc6128dd2f14e4b1c2eb");
 
-
         initView();
 //        initData();
         initDefaultFragment();
