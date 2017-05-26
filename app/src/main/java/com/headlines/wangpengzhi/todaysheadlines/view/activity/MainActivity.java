@@ -1,18 +1,12 @@
 package com.headlines.wangpengzhi.todaysheadlines.view.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -27,8 +21,6 @@ import com.headlines.wangpengzhi.todaysheadlines.view.fragment.Fragment04_Mine;
 import com.tencent.connect.common.Constants;
 import com.tencent.tauth.Tencent;
 
-import java.util.Arrays;
-import java.util.List;
 
 import cn.smssdk.SMSSDK;
 
@@ -40,6 +32,7 @@ public class MainActivity extends AppCompatActivity{
     private RadioButton rb_microbes;
     private RadioButton rb_mime;
     private FragmentTransaction transaction;
+    private FragmentTransaction transaction1;
 
     private Fragment01_Home home;
     private Fragment02_video video;
@@ -72,10 +65,14 @@ public class MainActivity extends AppCompatActivity{
 
 
         initView();
-        initData();
+//        initData();
         initDefaultFragment();
-        setRgListener();
+//        setRgListener();
+        setRgListener2();
     }
+
+
+
     private void initView() {
         rg = (RadioGroup) findViewById(R.id.rg);
         rb_home = (RadioButton) findViewById(R.id.rb_home);
@@ -86,7 +83,6 @@ public class MainActivity extends AppCompatActivity{
 
     private void initData() {
 
-        home = new Fragment01_Home();
         video = new Fragment02_video();
         microbes = new Fragment03_Microbes();
         mine = new Fragment04_Mine();
@@ -97,13 +93,128 @@ public class MainActivity extends AppCompatActivity{
 
         manager = getSupportFragmentManager();
         transaction = manager.beginTransaction();
+        home = new Fragment01_Home();
         transaction.add(R.id.fl,home);
         transaction.commit();
     }
 
 
-    private void setRgListener() {
+    private void setRgListener2() {
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId) {
+                    case R.id.rb_home:
+                        select(0);
+                        break;
+                    case R.id.rb_video:
+                        select(1);
+                        break;
+                    case R.id.rb_microbes:
+                        select(2);
+                        break;
+                    case R.id.rb_mime:
+                        select(3);
+                        break;
+                }
 
+            }
+        });
+
+        if (Fragment04_Mine.rdb_yj){
+            rb_home.setChecked(false);
+            rb_mime.setChecked(true);
+        }
+    }
+
+
+    private void select(int i) {
+        FragmentManager fm = getSupportFragmentManager();  //获得Fragment管理器
+        FragmentTransaction ft = fm.beginTransaction(); //开启一个事务
+
+        hidtFragment(ft);   //隐藏Fragment的方法，先判断fragment是否为空，如果不为空则隐藏Fragment
+
+        switch (i) {//点击切换fragment,如果fragment为空，则创建，如果不为空，就显示
+            case 0:
+                if (home == null) {
+                    home = new Fragment01_Home();
+                    ft.add(R.id.fl, home);
+                } else {
+                    ft.show(home);
+                }
+                break;
+            case 1:
+                if (video == null) {
+                    video = new Fragment02_video();
+                    ft.add(R.id.fl, video);
+                } else {
+                    ft.show(video);
+                }
+                break;
+            case 2:
+                if (microbes == null) {
+                    microbes = new Fragment03_Microbes();
+                    ft.add(R.id.fl, microbes);
+                } else {
+                    ft.show(microbes);
+                }
+                break;
+            case 3:
+                if (mine == null) {
+                    mine = new Fragment04_Mine();
+                    ft.add(R.id.fl, mine);
+                } else {
+                    ft.show(mine);
+                }
+                break;
+        }
+        ft.commit();   //提交事务
+
+    }
+    private void hidtFragment(FragmentTransaction fragmentTransaction) {
+        if (home != null) {
+            fragmentTransaction.hide(home);
+
+        }
+        if (video != null) {
+            fragmentTransaction.hide(video);
+
+        }
+        if (microbes != null) {
+            fragmentTransaction.hide(microbes);
+
+        }
+        if (mine != null) {
+            fragmentTransaction.hide(mine);
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void setRgListener() {
+        manager = getSupportFragmentManager();
+        transaction1 = manager.beginTransaction();
+        transaction1.add(R.id.fl,home);
+        transaction1.commit();
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
