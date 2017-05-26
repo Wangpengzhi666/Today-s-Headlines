@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.headlines.wangpengzhi.todaysheadlines.R;
+import com.headlines.wangpengzhi.todaysheadlines.event.TestEvent;
 import com.headlines.wangpengzhi.todaysheadlines.model.utils.UiUtils;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
@@ -24,6 +25,7 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -141,7 +143,7 @@ public class Fragment04_Mine extends Fragment {
                 rdb_yj = true;
                 UiUtils.switchAppTheme(getActivity());
                 reload();
-
+                EventBus.getDefault().post(new TestEvent(1));
             }
         });
     }

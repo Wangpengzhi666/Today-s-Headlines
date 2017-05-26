@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.headlines.wangpengzhi.todaysheadlines.R;
+import com.headlines.wangpengzhi.todaysheadlines.event.TestEvent;
 import com.headlines.wangpengzhi.todaysheadlines.model.frg01_xlist.Frg_01_xlistBean;
 import com.headlines.wangpengzhi.todaysheadlines.model.home.HomeBean;
 import com.headlines.wangpengzhi.todaysheadlines.presenter.Frg01_XListViewPresenter;
@@ -20,6 +21,11 @@ import com.headlines.wangpengzhi.todaysheadlines.view.iview.IHomeView;
 import com.headlines.wangpengzhi.todaysheadlines.view.iview.IViewByF1_f1;
 import com.limxing.xlistview.view.XListView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +37,7 @@ import java.util.List;
  */
 
 
-public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_xlistBean>{
+public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_xlistBean> {
 
     private XListView headline_xlv;
     private MyxListView myxListView;
@@ -40,14 +46,20 @@ public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_x
     private MyxListView adapter;
     private String urll;
     private List<Frg_01_xlistBean.ResultBean.DataBean> list;
-    public Frg_home_headline(String url){
+    private int noget = 0;
+
+    public Frg_home_headline(String url) {
         this.urll = url;
+    }
+
+    public Frg_home_headline() {
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.frg_home_headline,container,false);
+        return inflater.inflate(R.layout.frg_home_headline, container, false);
     }
 
     @Override
@@ -66,6 +78,7 @@ public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_x
             public void onRefresh() {
                 headline_xlv.stopRefresh(true);
             }
+
             //上拉加载更多
             @Override
             public void onLoadMore() {
@@ -96,9 +109,27 @@ public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_x
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), NewsDataActivity.class);
-                intent.putExtra("url", list.get(position-1).getUrl());
+                intent.putExtra("url", list.get(position - 1).getUrl());
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Register
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMoonEvent(TestEvent test){
+        noget = test.Noget();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Unregister
+        EventBus.getDefault().unregister(this);
     }
 }

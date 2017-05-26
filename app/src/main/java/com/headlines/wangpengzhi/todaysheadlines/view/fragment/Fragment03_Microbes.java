@@ -17,10 +17,15 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 
 import com.headlines.wangpengzhi.todaysheadlines.R;
+import com.headlines.wangpengzhi.todaysheadlines.event.TestEvent;
 import com.headlines.wangpengzhi.todaysheadlines.model.recycler.RecyclerBean;
 import com.headlines.wangpengzhi.todaysheadlines.presenter.RecyclerPresenter;
 import com.headlines.wangpengzhi.todaysheadlines.view.adapter.RecyclerAdapter;
 import com.headlines.wangpengzhi.todaysheadlines.view.iview.IRecyclerView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -42,6 +47,7 @@ public class Fragment03_Microbes extends Fragment implements IRecyclerView,Swipe
     private GridLayoutManager glm;
     private StaggeredGridLayoutManager sglm;
     private RecyclerPresenter recyclerPresenter;
+    private int noget = 0;
 
     @Nullable
     @Override
@@ -153,5 +159,27 @@ public class Fragment03_Microbes extends Fragment implements IRecyclerView,Swipe
         //刷新适配器
         adapter.notifyDataSetChanged();
 
+    }
+
+
+
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Register
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMoonEvent(TestEvent test){
+        noget = test.Noget();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Unregister
+        EventBus.getDefault().unregister(this);
     }
 }

@@ -10,13 +10,17 @@ package com.headlines.wangpengzhi.todaysheadlines.event;
 
 
 public class TestEvent {
-    private String wpz;
+    private int Noget;
 
-    public String getWpz() {
-        return wpz;
+    public TestEvent(int noget) {
+        Noget = noget;
     }
 
-    public void setWpz(String wpz) {
-        this.wpz = wpz;
+    public int Noget() {
+        return Noget;
+    }
+
+    public void setWpz(int Noget) {
+        this.Noget = Noget;
     }
 }

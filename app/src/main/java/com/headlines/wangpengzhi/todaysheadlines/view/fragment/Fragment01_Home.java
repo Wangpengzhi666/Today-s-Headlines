@@ -13,12 +13,17 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.headlines.wangpengzhi.todaysheadlines.R;
+import com.headlines.wangpengzhi.todaysheadlines.event.TestEvent;
 import com.headlines.wangpengzhi.todaysheadlines.model.tab.TabBean;
 import com.headlines.wangpengzhi.todaysheadlines.presenter.TabPresenter;
 import com.headlines.wangpengzhi.todaysheadlines.view.adapter.TabAdapter;
 import com.headlines.wangpengzhi.todaysheadlines.view.fragment.frg_home.Frg_home_headline;
 import com.headlines.wangpengzhi.todaysheadlines.view.iview.ITabView;
 import com.limxing.xlistview.view.XListView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +47,7 @@ public class Fragment01_Home extends Fragment implements ITabView<TabBean>{
     private int index = 0;
     private TabPresenter tabPresenter;
     private List<Fragment> list = new ArrayList();
+    private int noget = 0;
 
     @Nullable
     @Override
@@ -60,14 +66,12 @@ public class Fragment01_Home extends Fragment implements ITabView<TabBean>{
         home_tab = (TabLayout) getView().findViewById(R.id.home_tab);
         home_vp = (ViewPager) getView().findViewById(R.id.home_vp);
     }
-
     private void initData() {
 
 
         tabPresenter = new TabPresenter();
         tabPresenter.attachView(this);
-        tabPresenter.getTabDataFromServer(TabBean.class);
-
+        tabPresenter.getTabDataFromServer(TabBean.class,noget);
 
 
 //
@@ -119,4 +123,30 @@ public class Fragment01_Home extends Fragment implements ITabView<TabBean>{
     public void callbackErr(String errMsg, int errCode) {
 
     }
+
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Register
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMoonEvent(TestEvent test){
+        noget = test.Noget();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Unregister
+        EventBus.getDefault().unregister(this);
+    }
+
+
+
+
+
+
 }

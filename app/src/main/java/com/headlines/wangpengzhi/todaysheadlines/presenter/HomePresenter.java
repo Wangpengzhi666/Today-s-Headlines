@@ -23,13 +23,15 @@ public class HomePresenter extends BasePresenter<IHomeView> {
         x.image().bind(imageView, url);
     }
 
-    public <T> void getHomeDataFromServer(final Class<T> cla) {
+    public <T> void getHomeDataFromServer(final Class<T> cla,final int noget) {
         HttpUtils.getdata(url, new HttpUtils.CallbackVideoData<String>() {
             @Override
             public void callback(String s) {
                 Gson gson = new Gson();
                 T t = gson.fromJson(s, cla);
-                getMvpView().callbackStr(t);
+                if (noget == 0) {
+                    getMvpView().callbackStr(t);
+                }
 //
 //                if (getMvpView() != null) {
 //                    getMvpView().callbackStr(t);

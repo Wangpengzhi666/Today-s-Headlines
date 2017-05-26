@@ -8,6 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.headlines.wangpengzhi.todaysheadlines.R;
+import com.headlines.wangpengzhi.todaysheadlines.event.TestEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * @类作用:
@@ -23,5 +28,24 @@ public class Fragment02_video extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.frg_02_video,container,false);
+    }
+
+    private int noget = 0;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Register
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMoonEvent(TestEvent test){
+        noget = test.Noget();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Unregister
+        EventBus.getDefault().unregister(this);
     }
 }
