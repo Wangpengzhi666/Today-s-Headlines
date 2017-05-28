@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -16,6 +17,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,12 +26,9 @@ import java.util.List;
 import com.headlines.wangpengzhi.todaysheadlines.R;
 import com.headlines.wangpengzhi.todaysheadlines.model.channel.DataTools;
 import com.headlines.wangpengzhi.todaysheadlines.model.channel.ItemBean;
-import com.headlines.wangpengzhi.todaysheadlines.view.adapter.ChannelRecyclerAdapter;
 import com.headlines.wangpengzhi.todaysheadlines.view.adapter.RecyclerItemClickListener;
 import com.headlines.wangpengzhi.todaysheadlines.view.adapter.SimpleItemTouchHelperCallback;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.headlines.wangpengzhi.todaysheadlines.view.iview.ItemTouchHelperAdapter;
 
 /**
  * @类作用:
@@ -49,8 +48,8 @@ public class Channel extends Activity{
     private int screenWidth;
     private int recycleview_width;
 
-    public static ChannelRecyclerAdapter MYRECYCLERADAPTER;
-    public static ChannelRecyclerAdapter UNSELECTADAPTER;
+    private ChannelRecyclerAdapter MYRECYCLERADAPTER;
+    private ChannelRecyclerAdapter UNSELECTADAPTER;
     private SimpleItemTouchHelperCallback mycallback;
     private SimpleItemTouchHelperCallback unCallback;
     private ItemTouchHelper mytouchHelper;
@@ -61,7 +60,7 @@ public class Channel extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.channel_layout);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -78,19 +77,18 @@ public class Channel extends Activity{
 
     private void initData() {
         for (int i = 0; i < 15; i++) {
-            mineData.add(new ItemBean("贼帅" + i, false));
+            mineData.add(new ItemBean("帅智" + i, false));
         }
         for (int i = 15; i < 30; i++) {
-            otherData.add(new ItemBean("唉" + i, false));
+            otherData.add(new ItemBean("没毛病" + i, false));
         }
 
     }
     private void initView() {
         mylike = (RecyclerView) findViewById(R.id.recycler_mylike);
 
-        MYRECYCLERADAPTER = new ChannelRecyclerAdapter(Channel.this);
-
-        MYRECYCLERADAPTER.setRecyclerView_Width(recycleview_width, mineData, 0);
+        MYRECYCLERADAPTER = new ChannelRecyclerAdapter();
+        MYRECYCLERADAPTER.setlist(mineData,0);
 
         mylike.setAdapter(MYRECYCLERADAPTER);
 
@@ -104,10 +102,9 @@ public class Channel extends Activity{
 
         unselected = (RecyclerView) findViewById(R.id.recycler_Unselected);
 
-        UNSELECTADAPTER = new ChannelRecyclerAdapter(Channel.this);
+        UNSELECTADAPTER = new ChannelRecyclerAdapter();
 
-        UNSELECTADAPTER.setRecyclerView_Width(recycleview_width, otherData, 0);
-
+        UNSELECTADAPTER.setlist(otherData,1);
 
         unselected.setAdapter(UNSELECTADAPTER);
 
@@ -276,6 +273,162 @@ public class Channel extends Activity{
         return view;
     }
 
+
+    class ChannelRecyclerAdapter extends RecyclerView.Adapter<ChannelRecyclerAdapter.MyViewHolder> implements ItemTouchHelperAdapter {
+        //数据
+        private List<ItemBean> mlist;
+        private int type;
+
+        public void setlist (List<ItemBean> list, int type) {
+            this.mlist  = list;
+            this.type = type;
+        }
+
+        @Override
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View root = LayoutInflater.from(Channel.this).inflate(R.layout.item_list,parent,false);
+            MyViewHolder vh = new MyViewHolder(root);
+            return vh;
+        }
+
+
+
+        @Override
+        public void onBindViewHolder(MyViewHolder holder, final int position) {
+            holder.channel_tv.setText(mlist.get(position).getText());
+            //根据上边传回来的值设置判断删除图片的显示
+            if (type == 1){
+                holder.delete_tv.setVisibility(View.GONE);
+            }else if (type == 0){
+                //判断集合的前两个不设置删除按钮
+                if (position == 0 || position == 1) {
+                    holder.delete_tv.setVisibility(View.GONE);
+                } else if (mlist.get(position).isSelect()) {
+                    holder.delete_tv.setVisibility(View.VISIBLE);
+                } else {
+                    holder.delete_tv.setVisibility(View.GONE);
+                }
+                ViewGroup.LayoutParams params = holder.channel_rl.getLayoutParams();
+                params.width = recycleview_width;
+                holder.channel_rl.setLayoutParams(params);
+
+                holder.delete_tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (type == 0) {
+                            ItemBean positionItemBean = MYRECYCLERADAPTER.getItem(position);
+                            positionItemBean.setSelect(false);
+                            MYRECYCLERADAPTER.deleteItem(position);
+                            UNSELECTADAPTER.addItem(positionItemBean);
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            //注意:这里最少有一个,因为有多了一个添加按钮
+            return null == mlist ? 0 : mlist.size();
+        }
+
+        //移动处理
+        @Override
+        public void onItemMove(RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+            if (type == 0) {
+                int fromPosition = source.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+                if (toPosition == 0 || toPosition == 1) {
+
+                } else {
+                    if (fromPosition < mlist.size() && toPosition < mlist.size()) {
+                        //交换数据位置
+//                        Collections.swap(list, fromPosition, toPosition);
+                        ItemBean itemBean = mlist.get(fromPosition);
+                        mlist.remove(fromPosition);
+                        mlist.add(toPosition, itemBean);
+                        //刷新位置交换
+                        notifyItemMoved(fromPosition, toPosition);
+                    }
+                }
+                //移动过程中移除view的放大效果
+                onItemClear(source);
+            }
+        }
+
+        //移除
+        @Override
+        public void onItemDissmiss(RecyclerView.ViewHolder source) {
+            if (type == 0) {
+                int position = source.getAdapterPosition();
+                mlist.remove(position); //移除数据
+                notifyItemRemoved(position);//刷新数据移除
+            }
+        }
+
+        //放大
+        @Override
+        public void onItemSelect(RecyclerView.ViewHolder viewHolder) {
+            if (type == 0) {
+                //当拖拽选中时放大选中的view
+                int position = viewHolder.getAdapterPosition();
+                viewHolder.itemView.setScaleX(1.2f);
+                viewHolder.itemView.setScaleY(1.2f);
+            }
+        }
+
+        //恢复
+        @Override
+        public void onItemClear(RecyclerView.ViewHolder viewHolder) {
+            //拖拽结束后恢复view的状态
+            if (type == 0) {
+                viewHolder.itemView.setScaleX(1.0f);
+                viewHolder.itemView.setScaleY(1.0f);
+            }
+        }
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            private TextView channel_tv;
+            private TextView delete_tv;
+            private RelativeLayout channel_rl;
+
+            public MyViewHolder(View itemView) {
+                super(itemView);
+                channel_tv = (TextView) itemView.findViewById(R.id.channel_tv);
+                delete_tv = (TextView) itemView.findViewById(R.id.delete_tv);
+                channel_rl = (RelativeLayout) itemView.findViewById(R.id.channel_rl);
+            }
+        }
+
+
+
+        public ItemBean getItem(int position) {
+            return mlist.get(position);
+        }
+
+        public void addItem(ItemBean channel) {
+            mlist.add(channel);
+            notifyDataSetChanged();
+        }
+
+        public void allSelect() {
+            for (int i = 0; i < mlist.size(); i++) {
+                mlist.get(i).setSelect(true);
+            }
+            notifyDataSetChanged();
+        }
+
+        public void addItem(int position, ItemBean channel) {
+            mlist.add(position, channel);
+            notifyDataSetChanged();
+        }
+
+        public void deleteItem(int position) {
+            mlist.remove(position);
+            notifyDataSetChanged();
+        }
+
+    }
 
 }
 
