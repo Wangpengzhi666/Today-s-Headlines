@@ -34,14 +34,14 @@ public class ChannelRecyclerAdapter extends RecyclerView.Adapter<ChannelRecycler
     private int type;
     private int RecyclerView_Width;
 
-    public ChannelRecyclerAdapter(Context context, List<ItemBean> list, int type) {
+    public ChannelRecyclerAdapter(Context context) {
         this.context = context;
-        this.list = list;
-        this.type = type;
     }
 
-    public void setRecyclerView_Width(int recycleview_width){
+    public void setRecyclerView_Width(int recycleview_width, List<ItemBean> list, int type){
         RecyclerView_Width = recycleview_width;
+        this.list = list;
+        this.type = type;
     }
 
     @Override
@@ -76,10 +76,10 @@ public class ChannelRecyclerAdapter extends RecyclerView.Adapter<ChannelRecycler
                 @Override
                 public void onClick(View v) {
                     if (type == 0) {
-                        ItemBean positionItemBean = Channel.myRecyclerAdapter.getItem(position);
+                        ItemBean positionItemBean = Channel.MYRECYCLERADAPTER.getItem(position);
                         positionItemBean.setSelect(false);
-                        Channel.myRecyclerAdapter.deleteItem(position);
-                        Channel.unselectadapter.addItem(positionItemBean);
+                        Channel.MYRECYCLERADAPTER.deleteItem(position);
+                        Channel.UNSELECTADAPTER.addItem(positionItemBean);
                     }
                 }
             });

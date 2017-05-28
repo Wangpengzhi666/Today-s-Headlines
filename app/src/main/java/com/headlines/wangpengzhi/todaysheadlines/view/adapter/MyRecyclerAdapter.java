@@ -49,6 +49,8 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Re
     public int getItemCount() {
         return list.size();
     }
+
+
     class RecyclerViewHolder extends RecyclerView.ViewHolder{
         private ImageView image;
         private TextView text;

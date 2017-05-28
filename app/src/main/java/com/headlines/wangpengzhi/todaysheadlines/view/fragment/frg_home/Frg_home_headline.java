@@ -48,23 +48,29 @@ public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_x
     private List<Frg_01_xlistBean.ResultBean.DataBean> list;
     private int noget = 0;
 
-    public Frg_home_headline(String url) {
-        this.urll = url;
-    }
+//    public Frg_home_headline(String url) {
+//        this.urll = url;
+//    }
 
-    public Frg_home_headline() {
-
+    public static Frg_home_headline getInstance(String url) {
+        Frg_home_headline frg_home_headline = new Frg_home_headline();
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        frg_home_headline.setArguments(bundle);
+        return frg_home_headline;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        urll = getArguments().getString("url");
         return inflater.inflate(R.layout.frg_home_headline, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         initView();
 //        initData();
     }
@@ -123,9 +129,10 @@ public class Frg_home_headline extends Fragment implements IViewByF1_f1<Frg_01_x
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMoonEvent(TestEvent test){
+    public void onMoonEvent(TestEvent test) {
         noget = test.Noget();
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -48,8 +48,9 @@ public class Channel extends Activity{
     private RecyclerView unselected;
     private int screenWidth;
     private int recycleview_width;
-    public static ChannelRecyclerAdapter myRecyclerAdapter;
-    public static ChannelRecyclerAdapter unselectadapter;
+
+    public static ChannelRecyclerAdapter MYRECYCLERADAPTER;
+    public static ChannelRecyclerAdapter UNSELECTADAPTER;
     private SimpleItemTouchHelperCallback mycallback;
     private SimpleItemTouchHelperCallback unCallback;
     private ItemTouchHelper mytouchHelper;
@@ -87,15 +88,15 @@ public class Channel extends Activity{
     private void initView() {
         mylike = (RecyclerView) findViewById(R.id.recycler_mylike);
 
-        myRecyclerAdapter = new ChannelRecyclerAdapter(Channel.this, mineData, 0);
+        MYRECYCLERADAPTER = new ChannelRecyclerAdapter(Channel.this);
 
-        myRecyclerAdapter.setRecyclerView_Width(recycleview_width);
+        MYRECYCLERADAPTER.setRecyclerView_Width(recycleview_width, mineData, 0);
 
-        mylike.setAdapter(myRecyclerAdapter);
+        mylike.setAdapter(MYRECYCLERADAPTER);
 
         mylike.setLayoutManager(new GridLayoutManager(this,3));
 
-        mycallback = new SimpleItemTouchHelperCallback(myRecyclerAdapter);
+        mycallback = new SimpleItemTouchHelperCallback(MYRECYCLERADAPTER);
         mytouchHelper = new ItemTouchHelper(mycallback);
         mytouchHelper.attachToRecyclerView(mylike);
 
@@ -103,16 +104,16 @@ public class Channel extends Activity{
 
         unselected = (RecyclerView) findViewById(R.id.recycler_Unselected);
 
-        unselectadapter = new ChannelRecyclerAdapter(Channel.this, otherData, 0);
+        UNSELECTADAPTER = new ChannelRecyclerAdapter(Channel.this);
 
-        unselectadapter.setRecyclerView_Width(recycleview_width);
+        UNSELECTADAPTER.setRecyclerView_Width(recycleview_width, otherData, 0);
 
 
-        unselected.setAdapter(unselectadapter);
+        unselected.setAdapter(UNSELECTADAPTER);
 
         unselected.setLayoutManager(new GridLayoutManager(this,3));
 
-        unCallback = new SimpleItemTouchHelperCallback(unselectadapter);
+        unCallback = new SimpleItemTouchHelperCallback(UNSELECTADAPTER);
         untouchHelper = new ItemTouchHelper(unCallback);
         untouchHelper.attachToRecyclerView(unselected);
 
@@ -138,7 +139,7 @@ public class Channel extends Activity{
                     }
                 }
                 isediting = !isediting;
-                myRecyclerAdapter.notifyDataSetChanged();
+                MYRECYCLERADAPTER.notifyDataSetChanged();
 
             }
         });
@@ -175,13 +176,13 @@ public class Channel extends Activity{
                     TextView newTextView = (TextView) view.findViewById(R.id.channel_tv);
                     final int[] startLocation = new int[2];
                     newTextView.getLocationInWindow(startLocation);
-                    final ItemBean channel = unselectadapter.getItem(position);
+                    final ItemBean channel = UNSELECTADAPTER.getItem(position);
                     if (isediting) {
                         channel.setSelect(true);
                     } else {
                         channel.setSelect(false);
                     }
-                    myRecyclerAdapter.addItem(channel);
+                    MYRECYCLERADAPTER.addItem(channel);
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
                             try {
@@ -192,7 +193,7 @@ public class Channel extends Activity{
                                     int lastItemPosition = linearManager.findLastVisibleItemPosition();
                                     mylike.getChildAt(lastItemPosition).getLocationInWindow(endLocation);
                                     MoveAnim(moveImageView, startLocation, endLocation);
-                                    unselectadapter.deleteItem(position);
+                                    UNSELECTADAPTER.deleteItem(position);
                                 }
                             } catch (Exception localException) {
                             }

@@ -123,7 +123,7 @@ public class Fragment01_Home extends Fragment implements ITabView<TabBean>{
         tabData = tabBean.getResult().getDate();
         for (int i = 0; i < tabData.size(); i++) {
             home_tab.addTab(home_tab.newTab().setText(tabData.get(i).getTitle()));
-            list.add(new Frg_home_headline(tabData.get(i).getUri()));
+            list.add(Frg_home_headline.getInstance(tabData.get(i).getUri()));
         }
         setTabAdapter();
 
