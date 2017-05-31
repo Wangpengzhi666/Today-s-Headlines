@@ -50,7 +50,7 @@ public class VideoRecyclerView extends RecyclerView.Adapter<VideoRecyclerView.Vi
     @Override
     public void onBindViewHolder(VideoRecyclerHolder holder, int position) {
 
-       holder.jcVideoPlayer.setUp("http://gslb.miaopai.com/stream/ed5HCfnhovu3tyIQAiv60Q__.mp4", JCVideoPlayer.SCREEN_LAYOUT_LIST, "");
+       holder.jcVideoPlayer.setUp(list.get(position), JCVideoPlayer.SCREEN_LAYOUT_LIST, "");
 
             Glide.with(context).load("http://a4.att.hudong.com/05/71/01300000057455120185716259013.jpg").into(holder.jcVideoPlayer.thumbImageView);
 
